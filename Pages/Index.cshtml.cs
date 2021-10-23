@@ -5,8 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static System.Threading.Thread;
-
+using static System.Threading.Thread; 
 namespace EggBasket.Pages
 {
     public class IndexModel : PageModel
