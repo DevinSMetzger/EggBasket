@@ -85,7 +85,7 @@ namespace EggBasket.Pages.Credentials
 					genPass += (char)seed;
 					valid = false;
 				}
-				ViewData["GeneratedPassword2"] = genPass;
+				ViewData["GeneratedPassword"] = genPass;
 			}
 			return Page();
         }
