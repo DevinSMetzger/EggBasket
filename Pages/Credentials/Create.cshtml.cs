@@ -49,7 +49,8 @@ namespace EggBasket.Pages.Credentials
 			bool valid = false;
 			String genPass = "";
 			int trials = 1;
-			int[] filter = { 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 91, 92, 93, 94, 95, 96, 58, 59, 60, 61, 62, 64 }; //Excluded characters
+			char[] filter = { '"', '#', '$', '%', '&', '^', '*', '(', ')', '-', '=', '+', ',', '\'', '.'
+			,'/', ':', ';', '<', '>', '@', '[', ']', '\\', '_', '`'}; //Excluded characters
 
 			for (int k = 0; k < trials; k++)
 			{
@@ -69,7 +70,7 @@ namespace EggBasket.Pages.Credentials
 						valid = true;
 						for (int i = 0; i < filter.Length; i++)
 						{
-							if (seed == filter[i])
+							if ((char) seed == filter[i])
 							{
 								valid = false;
 								Sleep(1);
