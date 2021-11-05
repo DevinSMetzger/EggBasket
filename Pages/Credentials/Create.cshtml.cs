@@ -51,6 +51,8 @@ namespace EggBasket.Pages.Credentials
 			int trials = 1;
 			char[] filter = { '"', '#', '$', '%', '&', '^', '*', '(', ')', '-', '=', '+', ',', '\'', '.'
 			,'/', ':', ';', '<', '>', '@', '[', ']', '\\', '_', '`'}; //Excluded characters
+			DateTime forceSpawn = DateTime.Now;
+			int forceChar = (int) forceSpawn.Ticks % 15; ;
 
 			for (int k = 0; k < trials; k++)
 			{
@@ -68,12 +70,19 @@ namespace EggBasket.Pages.Credentials
 						seed = (seed % 90) + 33;
 
 						valid = true;
-						for (int i = 0; i < filter.Length; i++)
+						if (forceChar == j)
 						{
-							if ((char) seed == filter[i])
+							seed = (int)'!';
+						}
+						else
+						{
+							for (int i = 0; i < filter.Length; i++)
 							{
-								valid = false;
-								Sleep(1);
+								if ((char)seed == filter[i])
+								{
+									valid = false;
+									Sleep(1);
+								}
 							}
 						}
 					}
