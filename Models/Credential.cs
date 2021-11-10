@@ -15,7 +15,7 @@ namespace EggBasket.Models
 
         public string secureNote { get; set; }
 
-       
+       public string userId { get; set; }
 
     }
 }

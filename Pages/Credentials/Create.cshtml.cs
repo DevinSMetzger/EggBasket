@@ -36,6 +36,8 @@ namespace EggBasket.Pages.Credentials
                 return Page();
             }
 
+			Credential.userId = User.Identity.Name;
+
             _context.Credentials.Add(Credential);
             await _context.SaveChangesAsync();
 
