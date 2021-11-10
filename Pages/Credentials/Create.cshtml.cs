@@ -45,58 +45,55 @@ namespace EggBasket.Pages.Credentials
         public IActionResult OnPostGenPass() {
 			DateTime current;
 			long time = 0;
-			long seed = 0;
+			long seed = 67; //change to account number, current number is temporary
 			bool valid = false;
 			String genPass = "";
-			int trials = 1;
+			//int trials = 1;
 			char[] filter = { '"', '#', '$', '%', '&', '^', '*', '(', ')', '-', '=', '+', ',', '\'', '.'
 			,'/', ':', ';', '<', '>', '@', '[', ']', '\\', '_', '`'}; //Excluded characters
 			DateTime forceSpawn = DateTime.Now;
 			int forceChar = (int) forceSpawn.Ticks % 15; ;
 
-			for (int k = 0; k < trials; k++)
+			for (int j = 0; j < 15; j++)
 			{
-				for (int j = 0; j < 15; j++)
+				while (!valid)
 				{
-					while (!valid)
+					current = DateTime.Now;
+					time = current.Ticks;
+					if (time % 10 == 0)
 					{
-						current = DateTime.Now;
-						time = current.Ticks;
-						if (time % 10 == 0)
-						{
-							time = time / 10; //Brings time value down to a more manageable size
-						}
-						seed = (time % 6967) * 97;  //Math to bring number down to values associated to ASCII characters
-						seed = (seed % 90) + 33;
+						time = time / 10; //Brings time value down to a more manageable size
+					}
+					seed = (time % 6967) * seed;  //Math to bring number down to values associated to ASCII characters
+					seed = (seed % 90) + 33;
 
-						valid = true;
-						if (forceChar == j)
+					valid = true;
+					if (forceChar == j)
+					{
+						seed = (int)'!';
+					}
+					else
+					{
+						for (int i = 0; i < filter.Length; i++)
 						{
-							seed = (int)'!';
-						}
-						else
-						{
-							for (int i = 0; i < filter.Length; i++)
+							if ((char)seed == filter[i])
 							{
-								if ((char)seed == filter[i])
-								{
-									valid = false;
-									Sleep(1);
-								}
+								valid = false;
+								Sleep(1);
 							}
 						}
 					}
-
-					//Console.WriteLine("Time = " + time);
-					//Console.WriteLine("Seed = " + seed);
-					//Console.WriteLine((char)seed);
-
-					Sleep(10);
-					genPass += (char)seed;
-					valid = false;
 				}
-				ViewData["GeneratedPassword"] = genPass;
+
+				//Console.WriteLine("Time = " + time);
+				//Console.WriteLine("Seed = " + seed);
+				//Console.WriteLine((char)seed);
+
+				Sleep(10);
+				genPass += (char)seed;
+				valid = false;
 			}
+			ViewData["GeneratedPassword"] = genPass;
 			return Page();
         }
     }
