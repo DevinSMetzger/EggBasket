@@ -2,25 +2,61 @@
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
-<ul class="navbar-nav">
-@if (SignInManager.IsSignedIn(User))
-{
-    <li class="nav-item">
-        <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity.Name!</a>
-    </li>
-    <li class="nav-item">
-        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post" >
-            <button  type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-        </form>
-    </li>
-}
-else
-{
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
-    </li>
-}
-</ul>
+    <style>
+        .button {
+            border: none;
+            color: #E7DFDD;
+            text-align: center;
+            font-size: 20px;
+            margin-top: 10px;
+            padding: 5px 20px;
+            margin-right: 5px;
+        }
+        .register:hover {
+            background-color: #A239CA;
+        }
+        .register {
+            border: 2px solid #A239CA;
+            border-radius:10px;
+            background-color: #0E0B16;
+        }
+        .login {
+            background-color: #0E0B16;
+            margin-right: 5px;
+        }
+            .login:hover {
+                text-decoration: underline solid #A239CA;
+            }
+
+    </style>
+
+
+    <ul class="navbar-nav">
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity.Name!</a>
+            </li>
+            <li class="nav-item">
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
+                    <button type="submit" class="nav-link btn btn-link"style="color: #E7DFDD">Logout</button>
+                </form>
+            </li>
+        }
+        else
+        {
+            <!-- Login NavBar-->
+            <li class="nav-item">
+                <form action="/Identity/Account/Login">
+                    <button class="button login" type="submit">Login</button>
+                </form>
+            </li>
+            <!--Register Navbar-->
+            <li class="nav-item">
+                <!-- <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a> -->
+                <form action="/Identity/Account/Register">
+                    <button class="button register" type="submit">Register</button>
+                </form>
+            </li>
+        }
+    </ul>
