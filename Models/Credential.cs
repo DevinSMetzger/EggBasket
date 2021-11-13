@@ -14,8 +14,15 @@ namespace EggBasket.Models
         public string password { get; set; }
 
         public string secureNote { get; set; }
+            
+        public string userId { get; set; }
 
-       public string userId { get; set; }
+        public string roleID { get; set; }
+
+        public string company { get; set; }
+
+        [Required]
+        public bool personal { get; set; }
 
     }
 }

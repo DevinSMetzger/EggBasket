@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using EggBasket.Areas.Identity.Data;
 using EggBasket.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -22,8 +23,8 @@ namespace EggBasket.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<EggBasketUser> _signInManager;
+        private readonly UserManager<EggBasketUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly EggBasket.Data.ApplicationDbContext _context;
@@ -31,8 +32,8 @@ namespace EggBasket.Areas.Identity.Pages.Account
 
 
         public RegisterModel(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
+            UserManager<EggBasketUser> userManager,
+            SignInManager<EggBasketUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
             EggBasket.Data.ApplicationDbContext context,
@@ -77,6 +78,11 @@ namespace EggBasket.Areas.Identity.Pages.Account
             [Display(Name = "Choose role")]
             public string UserRole { get; set; }
 
+            [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "Choose Company")]
+            public string CompanyName { get; set; }
+
             [DataType(DataType.Text)]
             [Display(Name = "Role (if not found above)")]
             public string OtherRole { get; set; }
@@ -105,7 +111,7 @@ namespace EggBasket.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
+                var user = new EggBasketUser { UserName = Input.Email, Email = Input.Email, CompanyName = Input.CompanyName };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 
                 if (result.Succeeded)

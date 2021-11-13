@@ -28,6 +28,11 @@
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Input.CompanyName" style="color: #E7DFDD"></label>
+                <input asp-for="Input.CompanyName" class="form-control" />
+                <span asp-validation-for="Input.CompanyName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Input.UserRole" class="control-label" style="color: #E7DFDD"></label>
                 <select id ="UserRole"asp-for="Input.UserRole" asp-items="Model.Options">
                     <option value="Other">Other(Specify Below)</option>

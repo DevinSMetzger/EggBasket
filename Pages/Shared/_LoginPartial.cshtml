@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
-
+@using EggBasket.Areas.Identity.Data
+@inject SignInManager<EggBasketUser> SignInManager
+@inject UserManager<EggBasketUser> UserManager
     <style>
         .button {
             border: none;

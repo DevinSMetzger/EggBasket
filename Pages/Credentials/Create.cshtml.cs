@@ -8,16 +8,22 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using EggBasket.Data;
 using EggBasket.Models;
 using static System.Threading.Thread;
+using Microsoft.AspNetCore.Identity;
+using EggBasket.Areas.Identity.Data;
 
 namespace EggBasket.Pages.Credentials
 {
     public class CreateModel : PageModel
     {
         private readonly EggBasket.Data.CredentialContext _context;
-
-        public CreateModel(EggBasket.Data.CredentialContext context)
+		private readonly UserManager<EggBasketUser> _userManager;
+		private readonly EggBasket.Data.ApplicationDbContext _usersContext;
+		public CreateModel(EggBasket.Data.CredentialContext context,
+			UserManager<EggBasketUser> userManager, EggBasket.Data.ApplicationDbContext usersContext)
         {
+			_userManager = userManager;
             _context = context;
+			_usersContext = usersContext;
         }
 
         public IActionResult OnGet()
@@ -28,6 +34,8 @@ namespace EggBasket.Pages.Credentials
         [BindProperty]
         public Credential Credential { get; set; }
 
+
+
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
@@ -35,8 +43,17 @@ namespace EggBasket.Pages.Credentials
             {
                 return Page();
             }
+			var result = _userManager.FindByEmailAsync(User.Identity.Name);
 
-			Credential.userId = User.Identity.Name;
+			var role = _usersContext.UserRoles.Where(r => r.UserId == result.Result.Id);
+
+			Credential.roleID = role.First().RoleId;
+
+			Credential.userId = result.Result.Id;
+			Credential.company = result.Result.CompanyName;
+			
+			
+            
 
             _context.Credentials.Add(Credential);
             await _context.SaveChangesAsync();

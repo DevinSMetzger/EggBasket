@@ -9,6 +9,8 @@ namespace EggBasket.Areas.Identity.Data
     // Add profile data for application users by adding properties to the EggBasketUser class
     public class EggBasketUser : IdentityUser
     {
+        [PersonalData]
+        public string CompanyName { get; set; }
 
     }
 }
