@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>aspnet-EggBasket-9848BA62-3A6E-4C79-83B0-65AF30338191</UserSecretsId>
+    <ApplicationIcon>eggbasketwebbar_5wS_icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
