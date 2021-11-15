@@ -5,27 +5,28 @@
     <style>
         .button {
             border: none;
-            color: #E7DFDD;
+            color: black;
             text-align: center;
-            font-size: 20px;
+            font-size: 15px;
             margin-top: 10px;
             padding: 5px 20px;
             margin-right: 5px;
         }
         .register:hover {
-            background-color: #A239CA;
+            background-color: deepskyblue;
+            color:white;
         }
         .register {
-            border: 2px solid #A239CA;
+            border: 2px solid deepskyblue;
             border-radius:10px;
-            background-color: #0E0B16;
+            background-color: white;
         }
         .login {
-            background-color: #0E0B16;
+            background-color: white;
             margin-right: 5px;
         }
             .login:hover {
-                text-decoration: underline solid #A239CA;
+                color: deepskyblue;
             }
 
     </style>
@@ -39,7 +40,7 @@
             </li>
             <li class="nav-item">
                 <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
-                    <button type="submit" class="nav-link btn btn-link"style="color: #E7DFDD">Logout</button>
+                    <button type="submit" class="nav-link btn btn-link"style="color: black">Logout</button>
                 </form>
             </li>
         }

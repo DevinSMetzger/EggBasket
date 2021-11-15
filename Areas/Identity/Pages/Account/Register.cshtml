@@ -3,100 +3,100 @@
 @{
     ViewData["Title"] = "Register";
 }
+<div class="fontcolor">
+    <h1>@ViewData["Title"]</h1>
 
-<h1 style="color: #E7DFDD">@ViewData["Title"]</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <h4>Create a new account.</h4>
+                <hr />
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Input.Email"></label>
+                    <input asp-for="Input.Email" class="form-control" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Password"></label>
+                    <input asp-for="Input.Password" class="form-control" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.ConfirmPassword"></label>
+                    <input asp-for="Input.ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.CompanyName"></label>
+                    <input asp-for="Input.CompanyName" class="form-control" />
+                    <span asp-validation-for="Input.CompanyName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.UserRole" class="control-label"></label>
+                    <select id="UserRole" asp-for="Input.UserRole" asp-items="Model.Options">
+                        <option value="Other">Other(Specify Below)</option>
+                    </select>
+                    <span asp-validation-for="Input.UserRole" class="text-danger" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.OtherRole"></label>
+                    <input id="OtherRole" asp-for="Input.OtherRole" class="form-control" />
+                    <span asp-validation-for="Input.OtherRole" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+        </div>
+        <div class="col-md-6 col-md-offset-2">
+            <section>
+                <h4>Use another service to register.</h4>
+                <hr />
+                @{
+                    if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                    {
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <h4 style="color: #E7DFDD">Create a new account.</h4>
-            <hr />
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Input.Email" style="color: #E7DFDD"></label>
-                <input asp-for="Input.Email" class="form-control" />
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Input.Password" style="color: #E7DFDD"></label>
-                <input asp-for="Input.Password" class="form-control" />
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Input.ConfirmPassword" style="color: #E7DFDD"></label>
-                <input asp-for="Input.ConfirmPassword" class="form-control" />
-                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Input.CompanyName" style="color: #E7DFDD"></label>
-                <input asp-for="Input.CompanyName" class="form-control" />
-                <span asp-validation-for="Input.CompanyName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Input.UserRole" class="control-label" style="color: #E7DFDD"></label>
-                <select id ="UserRole"asp-for="Input.UserRole" asp-items="Model.Options">
-                    <option value="Other">Other(Specify Below)</option>
-                </select>
-                <span asp-validation-for="Input.UserRole" class="text-danger" />
-            </div>
-            <div class="form-group">
-                <label asp-for="Input.OtherRole" style="color: #E7DFDD"></label>
-                <input id="OtherRole" asp-for="Input.OtherRole" class="form-control" />
-                <span asp-validation-for="Input.OtherRole" class="text-danger"></span>
-            </div>
-            <button type="submit" class="btn btn-primary">Register</button>
-        </form>
-    </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h4 style="color: #E7DFDD">Use another service to register.</h4>
-            <hr />
-            @{
-                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                {
-                    <div>
-                        <p style="color: #E7DFDD">
+                        <p>
                             There are no external authentication services configured. See <a href="https://go.microsoft.com/fwlink/?LinkID=532715">this article</a>
                             for details on setting up this ASP.NET application to support logging in via external services.
                         </p>
-                    </div>
-                }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                        <div>
-                            <p style="color: #E7DFDD">
-                                @foreach (var provider in Model.ExternalLogins)
-                                {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account" style="color: #E7DFDD">@provider.DisplayName</button>
-                                }
-                            </p>
-                        </div>
-                    </form>
-                }
+                
             }
-        </section>
-    </div>
-</div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('#UserRole').change(function () {
-                var msg = $("#UserRole").val();
-                if (msg == "Other") {
-                    $("#OtherRole").prop('disabled', false);
-                } else {
-                    $("#OtherRole").prop('disabled', true);
+            else
+            {
+                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                    <div>
+                        <p>
+                            @foreach (var provider in Model.ExternalLogins)
+                            {
+                                <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account" style="color: #E7DFDD">@provider.DisplayName</button>
+                            }
+                        </p>
+                    </div>
+                </form>
+            }
                 }
+                </section>
+            </div>
+        </div>
 
-            });
+        @section Scripts {
+            <partial name="_ValidationScriptsPartial" />
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
-        });
-    </script>
-}
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $('#UserRole').change(function () {
+                        var msg = $("#UserRole").val();
+                        if (msg == "Other") {
+                            $("#OtherRole").prop('disabled', false);
+                        } else {
+                            $("#OtherRole").prop('disabled', true);
+                        }
 
+                    });
+
+                });
+            </script>
+        }
+    </div>
 
