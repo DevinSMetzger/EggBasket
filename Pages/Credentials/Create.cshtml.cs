@@ -71,8 +71,13 @@ namespace EggBasket.Pages.Credentials
 			char[] filter = { '"', '#', '$', '%', '&', '^', '*', '(', ')', '-', '=', '+', ',', '\'', '.'
 			,'/', ':', ';', '<', '>', '@', '[', ']', '\\', '_', '`'}; //Excluded characters
 			DateTime forceSpawn = DateTime.Now;
-			int forceChar = (int) forceSpawn.Ticks % 15; ;
-
+			int forceChar = (int) forceSpawn.Ticks % 15; 
+			int userName = 0;
+			for (int i = 0; i < User.Identity.Name.Length; i++)
+			{
+				userName = userName + User.Identity.Name[i];
+			}
+			Console.WriteLine(userName);
 			for (int j = 0; j < 15; j++)
 			{
 				while (!valid)
@@ -84,6 +89,7 @@ namespace EggBasket.Pages.Credentials
 						time = time / 10; //Brings time value down to a more manageable size
 					}
 					seed = (time % 6967) * seed;  //Math to bring number down to values associated to ASCII characters
+					seed = seed / userName;
 					seed = (seed % 90) + 33;
 
 					valid = true;
