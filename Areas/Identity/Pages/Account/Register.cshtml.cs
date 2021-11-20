@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using CertificateManager;
 using EggBasket.Areas.Identity.Data;
-using EggBasket.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,7 +15,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using EncryptDecryptLib;
 
 namespace EggBasket.Areas.Identity.Pages.Account
 {
@@ -29,6 +30,8 @@ namespace EggBasket.Areas.Identity.Pages.Account
         private readonly IEmailSender _emailSender;
         private readonly EggBasket.Data.ApplicationDbContext _context;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly CreateCertificates _createCertificates;
+        private readonly ImportExportCertificate _importExportCertificate;
 
 
         public RegisterModel(
@@ -37,7 +40,9 @@ namespace EggBasket.Areas.Identity.Pages.Account
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
             EggBasket.Data.ApplicationDbContext context,
-            RoleManager<IdentityRole> roleManager
+            RoleManager<IdentityRole> roleManager,
+            CreateCertificates createCertificates,
+            ImportExportCertificate importExportCertificate
             )
         {
             _roleManager = roleManager;
@@ -46,6 +51,8 @@ namespace EggBasket.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _context = context;
+            _createCertificates = createCertificates;
+            _importExportCertificate = importExportCertificate;
         }
 
         [BindProperty]
@@ -112,9 +119,13 @@ namespace EggBasket.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new EggBasketUser { UserName = Input.Email, Email = Input.Email, CompanyName = Input.CompanyName };
+                var identityRsaCert3072 = CreateRsaCertificates.CreateRsaCertificate(_createCertificates, 3072);
+                var publicKeyPem = _importExportCertificate.PemExportPublicKeyCertificate(identityRsaCert3072);
+                var privateKeyPem = _importExportCertificate.PemExportRsaPrivateKey(identityRsaCert3072);
+                var user = new EggBasketUser { UserName = Input.Email, Email = Input.Email, CompanyName = Input.CompanyName, PemPublicKey = publicKeyPem, PemPrivateKey = privateKeyPem };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 
+
                 if (result.Succeeded)
                 {
                     if (Input.UserRole.ToString().Contains("Other"))

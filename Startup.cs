@@ -1,6 +1,7 @@
 ﻿using EggBasket.Areas.Identity.Data;
 using EggBasket.Data;
 using EggBasket.Services;
+using EncryptDecryptLib;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -36,7 +37,6 @@ namespace EggBasket
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddDefaultIdentity<EggBasketUser>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-
             services.AddRazorPages();
 
             services.AddDbContext<CredentialContext>(options =>
@@ -66,6 +66,10 @@ namespace EggBasket
                 options.User.RequireUniqueEmail = true;
             });
 
+            services.AddCertificateManager();
+            services.AddTransient<SymmetricEncryptDecrypt>();
+            services.AddTransient<AsymmetricEncryptDecrypt>();
+            services.AddTransient<DigitalSignatures>();
             services.ConfigureApplicationCookie(options =>
             {
                 // Cookie settings

@@ -12,5 +12,9 @@ namespace EggBasket.Areas.Identity.Data
         [PersonalData]
         public string CompanyName { get; set; }
 
+        public string PemPrivateKey { get; set; }
+
+        public string PemPublicKey { get; set; }
+
     }
 }

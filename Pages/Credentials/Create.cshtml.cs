@@ -10,6 +10,10 @@ using EggBasket.Models;
 using static System.Threading.Thread;
 using Microsoft.AspNetCore.Identity;
 using EggBasket.Areas.Identity.Data;
+using EncryptDecryptLib;
+using CertificateManager;
+using System.Text.Json;
+using System.Security.Cryptography.X509Certificates;
 
 namespace EggBasket.Pages.Credentials
 {
@@ -18,13 +22,24 @@ namespace EggBasket.Pages.Credentials
         private readonly EggBasket.Data.CredentialContext _context;
 		private readonly UserManager<EggBasketUser> _userManager;
 		private readonly EggBasket.Data.ApplicationDbContext _usersContext;
+		private readonly SymmetricEncryptDecrypt _symmetricEncryptDecrypt;
+		private readonly AsymmetricEncryptDecrypt _asymmetricEncryptDecrypt;
+		private readonly ApplicationDbContext _applicationDbContext;
+		private readonly ImportExportCertificate _importExportCertificate;
 		public CreateModel(EggBasket.Data.CredentialContext context,
-			UserManager<EggBasketUser> userManager, EggBasket.Data.ApplicationDbContext usersContext)
+			UserManager<EggBasketUser> userManager, EggBasket.Data.ApplicationDbContext usersContext, SymmetricEncryptDecrypt symmetricEncryptDecrypt,
+		AsymmetricEncryptDecrypt asymmetricEncryptDecrypt,
+		ApplicationDbContext applicationDbContext,
+		ImportExportCertificate importExportCertificate)
         {
 			_userManager = userManager;
             _context = context;
 			_usersContext = usersContext;
-        }
+			_symmetricEncryptDecrypt = symmetricEncryptDecrypt;
+			_asymmetricEncryptDecrypt = asymmetricEncryptDecrypt;
+			_applicationDbContext = applicationDbContext;
+			_importExportCertificate = importExportCertificate;
+		}
 
         public IActionResult OnGet()
         {
@@ -51,17 +66,82 @@ namespace EggBasket.Pages.Credentials
 
 			Credential.userId = result.Result.Id;
 			Credential.company = result.Result.CompanyName;
-			
-			
-            
 
-            _context.Credentials.Add(Credential);
+			var (Key, IVBase64) = _symmetricEncryptDecrypt.InitSymmetricEncryptionKeyIV();
+
+			var encryptedText = _symmetricEncryptDecrypt.Encrypt(Credential.username, IVBase64, Key);
+
+			var targetUserPublicCertificate = GetCertificateWithPublicKeyForIdentity(User.Identity.Name);
+
+			var encryptedKey = _asymmetricEncryptDecrypt.Encrypt(Key,
+				Utils.CreateRsaPublicKey(targetUserPublicCertificate));
+
+			var encryptedIV = _asymmetricEncryptDecrypt.Encrypt(IVBase64,
+				Utils.CreateRsaPublicKey(targetUserPublicCertificate));
+
+			var encryptedDto = new EncryptedDto
+			{
+				EncryptedText = encryptedText,
+				Key = encryptedKey,
+				IV = encryptedIV
+			};
+
+			Credential.username = JsonSerializer.Serialize(encryptedDto);
+
+			(Key, IVBase64) = _symmetricEncryptDecrypt.InitSymmetricEncryptionKeyIV();
+
+			encryptedText = _symmetricEncryptDecrypt.Encrypt(Credential.password, IVBase64, Key);
+
+			targetUserPublicCertificate = GetCertificateWithPublicKeyForIdentity(User.Identity.Name);
+
+			encryptedKey = _asymmetricEncryptDecrypt.Encrypt(Key,
+				Utils.CreateRsaPublicKey(targetUserPublicCertificate));
+
+			encryptedIV = _asymmetricEncryptDecrypt.Encrypt(IVBase64,
+				Utils.CreateRsaPublicKey(targetUserPublicCertificate));
+
+			encryptedDto = new EncryptedDto
+			{
+				EncryptedText = encryptedText,
+				Key = encryptedKey,
+				IV = encryptedIV
+			};
+			Credential.password = JsonSerializer.Serialize(encryptedDto);
+
+
+			(Key, IVBase64) = _symmetricEncryptDecrypt.InitSymmetricEncryptionKeyIV();
+
+			encryptedText = _symmetricEncryptDecrypt.Encrypt(Credential.secureNote, IVBase64, Key);
+
+			targetUserPublicCertificate = GetCertificateWithPublicKeyForIdentity(User.Identity.Name);
+
+			encryptedKey = _asymmetricEncryptDecrypt.Encrypt(Key,
+				Utils.CreateRsaPublicKey(targetUserPublicCertificate));
+
+			encryptedIV = _asymmetricEncryptDecrypt.Encrypt(IVBase64,
+				Utils.CreateRsaPublicKey(targetUserPublicCertificate));
+
+			encryptedDto = new EncryptedDto
+			{
+				EncryptedText = encryptedText,
+				Key = encryptedKey,
+				IV = encryptedIV
+			};
+
+			Credential.secureNote = JsonSerializer.Serialize(encryptedDto);
+
+			_context.Credentials.Add(Credential);
             await _context.SaveChangesAsync();
-
             return RedirectToPage("./Index");
         }
+		private X509Certificate2 GetCertificateWithPublicKeyForIdentity(string email)
+		{
+			var user = _applicationDbContext.Users.First(user => user.Email == email);
+			var cert = _importExportCertificate.PemImportCertificate(user.PemPublicKey);
+			return cert;
+		}
 
-        public IActionResult OnPostGenPass() {
+		public IActionResult OnPostGenPass() {
 			DateTime current;
 			long time = 0;
 			long seed = 67; //change to account number, current number is temporary

@@ -9,6 +9,11 @@ using EggBasket.Data;
 using EggBasket.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using CertificateManager;
+using EncryptDecryptLib;
+using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
+using EggBasket.Areas.Identity.Data;
 
 namespace EggBasket.Pages.Credentials
 {
@@ -16,20 +21,134 @@ namespace EggBasket.Pages.Credentials
     {
         private readonly EggBasket.Data.CredentialContext _context;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SymmetricEncryptDecrypt _symmetricEncryptDecrypt;
+        private readonly AsymmetricEncryptDecrypt _asymmetricEncryptDecrypt;
+        private readonly ApplicationDbContext _applicationDbContext;
+        private readonly ImportExportCertificate _importExportCertificate;
+        private readonly UserManager<EggBasketUser> _userManager;
+        private readonly EggBasket.Data.ApplicationDbContext _usersContext;
 
-        public IndexModel(EggBasket.Data.CredentialContext context, RoleManager<IdentityRole> roleManager)
+        public IndexModel(EggBasket.Data.CredentialContext context, SymmetricEncryptDecrypt symmetricEncryptDecrypt,
+        AsymmetricEncryptDecrypt asymmetricEncryptDecrypt,
+        ApplicationDbContext applicationDbContext,
+        ImportExportCertificate importExportCertificate, RoleManager<IdentityRole> roleManager, UserManager<EggBasketUser> userManager, EggBasket.Data.ApplicationDbContext usersContext)
         {
             _context = context;
+            _symmetricEncryptDecrypt = symmetricEncryptDecrypt;
+            _asymmetricEncryptDecrypt = asymmetricEncryptDecrypt;
+            _applicationDbContext = applicationDbContext;
+            _importExportCertificate = importExportCertificate;
+            _userManager = userManager;
             _roleManager = roleManager;
+            _usersContext = usersContext; 
         }
 
         public IList<Credential> Credential { get;set; }
 
-        
+
         public async Task OnGetAsync()
         {
+            var cert = GetCertificateWithPrivateKeyForIdentity();
             Credential = await _context.Credentials.ToListAsync();
+            if (Credential.Count > 0) {
+                foreach (Credential item in _context.Credentials.ToList())
+                {
+                    var userResult = _userManager.FindByEmailAsync(User.Identity.Name);
+                    string role = _usersContext.UserRoles.Where(r => r.UserId == userResult.Result.Id).First().RoleId;
+                    Credential.Remove(item);
+                    if (item.personal == false)
+                    {
+                        if (item.roleID == role && item.company == userResult.Result.CompanyName)
+                        {
+                            var encryptedDto = JsonSerializer.Deserialize<EncryptedDto>(item.username);
 
+                            var key = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.Key,
+                                Utils.CreateRsaPrivateKey(cert));
+
+                            var IV = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.IV,
+                                Utils.CreateRsaPrivateKey(cert));
+
+                            item.username = _symmetricEncryptDecrypt.Decrypt(encryptedDto.EncryptedText, IV, key);
+
+                            encryptedDto = JsonSerializer.Deserialize<EncryptedDto>(item.password);
+
+                            key = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.Key,
+                                Utils.CreateRsaPrivateKey(cert));
+
+                            IV = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.IV,
+                                Utils.CreateRsaPrivateKey(cert));
+
+                            item.password = _symmetricEncryptDecrypt.Decrypt(encryptedDto.EncryptedText, IV, key);
+
+                            encryptedDto = JsonSerializer.Deserialize<EncryptedDto>(item.secureNote);
+
+                            key = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.Key,
+                                Utils.CreateRsaPrivateKey(cert));
+
+                            IV = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.IV,
+                                Utils.CreateRsaPrivateKey(cert));
+
+                            item.secureNote = _symmetricEncryptDecrypt.Decrypt(encryptedDto.EncryptedText, IV, key);
+
+                            Credential.Add(item);
+                        }
+                    }
+                    else
+                    {
+                        if (userResult.Result.Id == item.userId)
+                        {
+
+                            var encryptedDto = JsonSerializer.Deserialize<EncryptedDto>(item.username);
+
+                            var key = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.Key,
+                                Utils.CreateRsaPrivateKey(cert));
+
+                            var IV = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.IV,
+                                Utils.CreateRsaPrivateKey(cert));
+
+                            item.username = _symmetricEncryptDecrypt.Decrypt(encryptedDto.EncryptedText, IV, key);
+
+                            encryptedDto = JsonSerializer.Deserialize<EncryptedDto>(item.password);
+
+                            key = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.Key,
+                                Utils.CreateRsaPrivateKey(cert));
+
+                            IV = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.IV,
+                                Utils.CreateRsaPrivateKey(cert));
+
+                            item.password = _symmetricEncryptDecrypt.Decrypt(encryptedDto.EncryptedText, IV, key);
+
+                            encryptedDto = JsonSerializer.Deserialize<EncryptedDto>(item.secureNote);
+
+                            key = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.Key,
+                                Utils.CreateRsaPrivateKey(cert));
+
+                            IV = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.IV,
+                                Utils.CreateRsaPrivateKey(cert));
+
+                            item.secureNote = _symmetricEncryptDecrypt.Decrypt(encryptedDto.EncryptedText, IV, key);
+
+                            Credential.Add(item);
+                        }
+
+                    }
+
+                }
+
+            } 
         }
+        private X509Certificate2 GetCertificateWithPrivateKeyForIdentity()
+        {
+            var user = _applicationDbContext.Users.First(user => user.Email == User.Identity.Name);
+
+            var certWithPublicKey = _importExportCertificate.PemImportCertificate(user.PemPublicKey);
+            var privateKey = _importExportCertificate.PemImportPrivateKey(user.PemPrivateKey);
+
+            var cert = _importExportCertificate.CreateCertificateWithPrivateKey(
+                certWithPublicKey, privateKey);
+
+            return cert;
+        }
+
     }
 }
