@@ -40,6 +40,10 @@
         color:black;
     }
 
+    .CStorage:hover{
+        color:deepskyblue;
+    }
+
 
 </style>
 
@@ -75,11 +79,15 @@
                                 </li>
                                 @if (SignInManager.IsSignedIn(User))
                                 {
-                                    <li class="nav-item">
-                                        <a class="nav-link text-dark" asp-area="" asp-page="/Credentials/Index">Credential Storage <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock-fill" viewBox="0 0 16 16">
-    <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
-</svg></a>
-                                    </li>
+                            <li class="nav-item">
+                                <form action="/Credentials/Index">
+                                    <button class="button2 CStorage" type="submit">
+                                        Credential Storage <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock-fill" viewBox="0 0 16 16">
+                                            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
+                                        </svg>
+                                    </button>
+                                    </form>
+                            </li>
                                 }
                             </ul>
                             <partial name="_LoginPartial" />
@@ -92,7 +100,7 @@
                     @RenderBody()
                 </main>
             </div>
-            <!--<footer class="border-top footer text-muted">-->
+            
             <div class="footer">
                 <p style="padding-left:5px"> 2021 - EggBasket - <a asp-area="" asp-page="/Privacy">Privacy</a></p>
                 <p style="font-size:8px; padding-left:5px"> Icons made by <a href="https://www.flaticon.com/authors/prosymbols-premium" title="Prosymbols Premium" style="font-size:8px">Prosymbols Premium</a> from <a href="https://www.flaticon.com/" title="Flaticon" style="font-size:8px">www.flaticon.com</a></p>

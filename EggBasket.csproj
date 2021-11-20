@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\Images\AdobeStock_344996823.jpeg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="EncryptDecryptLib\EncryptDecryptLib.csproj" />
   </ItemGroup>
 
