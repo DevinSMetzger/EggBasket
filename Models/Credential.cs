@@ -9,13 +9,12 @@ namespace EggBasket.Models
 {
     public class Credential
     {
+
         public int ID { get; set; }
         public String username { get; set; }
         public string password { get; set; }
 
         public string secureNote { get; set; }
-            
-        public string userId { get; set; }
 
         public string roleID { get; set; }
 
@@ -23,6 +22,8 @@ namespace EggBasket.Models
 
         [Required]
         public bool personal { get; set; }
+
+        public string owneremail { get; set; }
 
     }
 }

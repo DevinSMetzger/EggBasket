@@ -15,10 +15,13 @@ namespace EggBasket.Data
         }
 
         public DbSet<Credential> Credentials { get; set; }
+        public DbSet<CredentialAccess> CredentialAccess { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Credential>().ToTable("Credential");
+            modelBuilder.Entity<CredentialAccess>().ToTable("CredentialAccess");
         }
     }
 }

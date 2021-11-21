@@ -3,14 +3,16 @@ using EggBasket.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EggBasket.Migrations
 {
     [DbContext(typeof(CredentialContext))]
-    partial class CredentialContextModelSnapshot : ModelSnapshot
+    [Migration("20211121024620_werwe")]
+    partial class werwe
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,9 +28,6 @@ namespace EggBasket.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("company")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("owneremail")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("password")
@@ -48,7 +47,7 @@ namespace EggBasket.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Credential");
+                    b.ToTable("CredentialAccess");
                 });
 
             modelBuilder.Entity("EggBasket.Models.CredentialAccess", b =>
@@ -66,7 +65,7 @@ namespace EggBasket.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CredentialAccess");
+                    b.ToTable("CredentialAcess");
                 });
 #pragma warning restore 612, 618
         }

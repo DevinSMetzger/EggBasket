@@ -16,5 +16,8 @@ namespace EggBasket.Areas.Identity.Data
 
         public string PemPublicKey { get; set; }
 
+        public string FirstName { get; set; } 
+        public string LastName { get; set; }
+
     }
 }

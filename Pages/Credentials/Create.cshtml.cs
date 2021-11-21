@@ -48,11 +48,12 @@ namespace EggBasket.Pages.Credentials
 
         [BindProperty]
         public Credential Credential { get; set; }
+		public CredentialAccess access { get; set; }
 
 
 
-        // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
-        public async Task<IActionResult> OnPostAsync()
+		// To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
+		public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
@@ -62,9 +63,10 @@ namespace EggBasket.Pages.Credentials
 
 			var role = _usersContext.UserRoles.Where(r => r.UserId == result.Result.Id);
 
+			Credential.owneremail = User.Identity.Name;
+			
 			Credential.roleID = role.First().RoleId;
 
-			Credential.userId = result.Result.Id;
 			Credential.company = result.Result.CompanyName;
 
 			var (Key, IVBase64) = _symmetricEncryptDecrypt.InitSymmetricEncryptionKeyIV();
@@ -132,7 +134,13 @@ namespace EggBasket.Pages.Credentials
 
 			_context.Credentials.Add(Credential);
             await _context.SaveChangesAsync();
-            return RedirectToPage("./Index");
+
+			access = new CredentialAccess();
+			access.credential = Credential.ID;
+			access.userid = result.Result.Id;
+			_context.CredentialAccess.Add(access);
+			await _context.SaveChangesAsync();
+			return RedirectToPage("./Index");
         }
 		private X509Certificate2 GetCertificateWithPublicKeyForIdentity(string email)
 		{

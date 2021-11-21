@@ -70,12 +70,20 @@ namespace EggBasket.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+            [Required]
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; }
+
+            [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [RegularExpression("^[^<>@#$%&*=]*$", ErrorMessage = "The password contains an invalid character")]  //password validation
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }
 
+            [Required]
             [DataType(DataType.Password)]
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
@@ -94,6 +102,7 @@ namespace EggBasket.Areas.Identity.Pages.Account
             [DataType(DataType.Text)]
             [Display(Name = "Role (if not found above)")]
             public string OtherRole { get; set; }
+
         }
 
         public List<SelectListItem> Options { get; set; }
@@ -122,7 +131,7 @@ namespace EggBasket.Areas.Identity.Pages.Account
                 var identityRsaCert3072 = CreateRsaCertificates.CreateRsaCertificate(_createCertificates, 3072);
                 var publicKeyPem = _importExportCertificate.PemExportPublicKeyCertificate(identityRsaCert3072);
                 var privateKeyPem = _importExportCertificate.PemExportRsaPrivateKey(identityRsaCert3072);
-                var user = new EggBasketUser { UserName = Input.Email, Email = Input.Email, CompanyName = Input.CompanyName, PemPublicKey = publicKeyPem, PemPrivateKey = privateKeyPem };
+                var user = new EggBasketUser { UserName = Input.Email, Email = Input.Email, CompanyName = Input.CompanyName, PemPublicKey = publicKeyPem, PemPrivateKey = privateKeyPem, FirstName = Input.FirstName, LastName = Input.LastName };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 
 

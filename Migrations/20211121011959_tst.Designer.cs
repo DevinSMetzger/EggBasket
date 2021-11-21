@@ -3,14 +3,16 @@ using EggBasket.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EggBasket.Migrations
 {
     [DbContext(typeof(CredentialContext))]
-    partial class CredentialContextModelSnapshot : ModelSnapshot
+    [Migration("20211121011959_tst")]
+    partial class tst
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,9 +30,6 @@ namespace EggBasket.Migrations
                     b.Property<string>("company")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("owneremail")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("password")
                         .HasColumnType("nvarchar(max)");
 
@@ -43,30 +42,15 @@ namespace EggBasket.Migrations
                     b.Property<string>("secureNote")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("userIds")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("username")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
                     b.ToTable("Credential");
-                });
-
-            modelBuilder.Entity("EggBasket.Models.CredentialAccess", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("credential")
-                        .HasColumnType("int");
-
-                    b.Property<string>("userid")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CredentialAccess");
                 });
 #pragma warning restore 612, 618
         }

@@ -46,8 +46,8 @@
         @if (SignInManager.IsSignedIn(User))
         {
             <li class="nav-item">
-                <form action="/Account/Manage/Index">
-                <button type="submit" class="button2 User" title="Manage Account">Hello @User.Identity.Name!</button>
+                <form action="/Identity/Account/Manage/Index">
+                <button type="submit" class="button2 User" title="Manage Account">Hello @UserManager.FindByEmailAsync(User.Identity.Name).Result.FirstName!</button>
                     </form>
             </li>
             <li class="nav-item">

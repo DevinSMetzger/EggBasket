@@ -48,11 +48,12 @@ namespace EggBasket.Pages.Credentials
 
         public async Task OnGetAsync()
         {
-            var cert = GetCertificateWithPrivateKeyForIdentity();
+            
             Credential = await _context.Credentials.ToListAsync();
             if (Credential.Count > 0) {
                 foreach (Credential item in _context.Credentials.ToList())
                 {
+                    var cert = GetCertificateWithPrivateKeyForIdentity(item);
                     var userResult = _userManager.FindByEmailAsync(User.Identity.Name);
                     string role = _usersContext.UserRoles.Where(r => r.UserId == userResult.Result.Id).First().RoleId;
                     Credential.Remove(item);
@@ -95,41 +96,47 @@ namespace EggBasket.Pages.Credentials
                     }
                     else
                     {
-                        if (userResult.Result.Id == item.userId)
+                        if(item != null)
                         {
+                            var userIDmatches = _context.CredentialAccess.Where(r => r.userid == userResult.Result.Id);
 
-                            var encryptedDto = JsonSerializer.Deserialize<EncryptedDto>(item.username);
+                            if (userIDmatches.Any(t => t.credential == item.ID))
+                            {
 
-                            var key = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.Key,
-                                Utils.CreateRsaPrivateKey(cert));
+                                var encryptedDto = JsonSerializer.Deserialize<EncryptedDto>(item.username);
 
-                            var IV = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.IV,
-                                Utils.CreateRsaPrivateKey(cert));
+                                var key = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.Key,
+                                    Utils.CreateRsaPrivateKey(cert));
 
-                            item.username = _symmetricEncryptDecrypt.Decrypt(encryptedDto.EncryptedText, IV, key);
+                                var IV = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.IV,
+                                    Utils.CreateRsaPrivateKey(cert));
 
-                            encryptedDto = JsonSerializer.Deserialize<EncryptedDto>(item.password);
+                                item.username = _symmetricEncryptDecrypt.Decrypt(encryptedDto.EncryptedText, IV, key);
 
-                            key = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.Key,
-                                Utils.CreateRsaPrivateKey(cert));
+                                encryptedDto = JsonSerializer.Deserialize<EncryptedDto>(item.password);
 
-                            IV = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.IV,
-                                Utils.CreateRsaPrivateKey(cert));
+                                key = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.Key,
+                                    Utils.CreateRsaPrivateKey(cert));
 
-                            item.password = _symmetricEncryptDecrypt.Decrypt(encryptedDto.EncryptedText, IV, key);
+                                IV = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.IV,
+                                    Utils.CreateRsaPrivateKey(cert));
 
-                            encryptedDto = JsonSerializer.Deserialize<EncryptedDto>(item.secureNote);
+                                item.password = _symmetricEncryptDecrypt.Decrypt(encryptedDto.EncryptedText, IV, key);
 
-                            key = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.Key,
-                                Utils.CreateRsaPrivateKey(cert));
+                                encryptedDto = JsonSerializer.Deserialize<EncryptedDto>(item.secureNote);
 
-                            IV = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.IV,
-                                Utils.CreateRsaPrivateKey(cert));
+                                key = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.Key,
+                                    Utils.CreateRsaPrivateKey(cert));
 
-                            item.secureNote = _symmetricEncryptDecrypt.Decrypt(encryptedDto.EncryptedText, IV, key);
+                                IV = _asymmetricEncryptDecrypt.Decrypt(encryptedDto.IV,
+                                    Utils.CreateRsaPrivateKey(cert));
 
-                            Credential.Add(item);
+                                item.secureNote = _symmetricEncryptDecrypt.Decrypt(encryptedDto.EncryptedText, IV, key);
+
+                                Credential.Add(item);
+                            }
                         }
+                        
 
                     }
 
@@ -137,9 +144,28 @@ namespace EggBasket.Pages.Credentials
 
             } 
         }
-        private X509Certificate2 GetCertificateWithPrivateKeyForIdentity()
+
+
+        public IActionResult OnPost()
         {
-            var user = _applicationDbContext.Users.First(user => user.Email == User.Identity.Name);
+
+            var emailAddress = Request.Form["email"];
+            var credentialID = Request.Form["credentialID"];
+            EggBasketUser user = _userManager.FindByEmailAsync(emailAddress).Result;
+
+            CredentialAccess access = new CredentialAccess();
+            access.credential = Int32.Parse(credentialID);
+            access.userid = user.Id;
+            _context.CredentialAccess.Add(access);
+
+
+
+            _context.SaveChanges();
+            return RedirectToPage("./Index");
+        }
+        private X509Certificate2 GetCertificateWithPrivateKeyForIdentity(Credential item)
+        {
+            var user = _applicationDbContext.Users.First(user => user.Email == item.owneremail);
 
             var certWithPublicKey = _importExportCertificate.PemImportCertificate(user.PemPublicKey);
             var privateKey = _importExportCertificate.PemImportPrivateKey(user.PemPrivateKey);
