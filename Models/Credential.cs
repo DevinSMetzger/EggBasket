@@ -11,16 +11,22 @@ namespace EggBasket.Models
     {
 
         public int ID { get; set; }
+
+        [Display(Name = "Username")]
         public String username { get; set; }
+        [Display(Name = "Password")]
         public string password { get; set; }
 
+        [Display(Name = "Secure Note")]
         public string secureNote { get; set; }
+
 
         public string roleID { get; set; }
 
         public string company { get; set; }
 
         [Required]
+        [Display(Name = "Role access?")]
         public bool personal { get; set; }
 
         public string owneremail { get; set; }

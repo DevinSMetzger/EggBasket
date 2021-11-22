@@ -23,8 +23,9 @@ namespace EggBasket.Pages.Credentials
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SymmetricEncryptDecrypt _symmetricEncryptDecrypt;
         private readonly AsymmetricEncryptDecrypt _asymmetricEncryptDecrypt;
-        private readonly ApplicationDbContext _applicationDbContext;
+
         private readonly ImportExportCertificate _importExportCertificate;
+        private readonly ApplicationDbContext _applicationDbContext;
         private readonly UserManager<EggBasketUser> _userManager;
         private readonly EggBasket.Data.ApplicationDbContext _usersContext;
 

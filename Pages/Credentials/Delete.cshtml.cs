@@ -53,12 +53,10 @@ namespace EggBasket.Pages.Credentials
             }
 
             Credential = await _context.Credentials.FirstOrDefaultAsync(m => m.ID == id);
-            var cert = GetCertificateWithPrivateKeyForIdentity();
+            var cert = GetCertificateWithPrivateKeyForIdentity(Credential);
 
             if (Credential == null)
             {
-               
-
                 return NotFound();
             }
             var encryptedDto = JsonSerializer.Deserialize<EncryptedDto>(Credential.username);
@@ -109,9 +107,9 @@ namespace EggBasket.Pages.Credentials
             }
             return RedirectToPage("./Index");
         }
-        private X509Certificate2 GetCertificateWithPrivateKeyForIdentity()
+        private X509Certificate2 GetCertificateWithPrivateKeyForIdentity(Credential item)
         {
-            var user = _applicationDbContext.Users.First(user => user.Email == User.Identity.Name);
+            var user = _applicationDbContext.Users.First(user => user.Email == item.owneremail);
 
             var certWithPublicKey = _importExportCertificate.PemImportCertificate(user.PemPublicKey);
             var privateKey = _importExportCertificate.PemImportPrivateKey(user.PemPrivateKey);
