@@ -17,7 +17,7 @@ namespace EggBasket.Models
         [Display(Name = "Password")]
         public string password { get; set; }
 
-        [Display(Name = "Secure Note")]
+        [Display(Name = "Note")]
         public string secureNote { get; set; }
 
 
@@ -26,7 +26,7 @@ namespace EggBasket.Models
         public string company { get; set; }
 
         [Required]
-        [Display(Name = "Role access?")]
+        [Display(Name = "Private")]
         public bool personal { get; set; }
 
         public string owneremail { get; set; }

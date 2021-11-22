@@ -153,16 +153,13 @@ namespace EggBasket.Pages.Credentials
             var emailAddress = Request.Form["email"];
             var credentialID = Request.Form["credentialID"];
             EggBasketUser user = _userManager.FindByEmailAsync(emailAddress).Result;
-
             CredentialAccess access = new CredentialAccess();
             access.credential = Int32.Parse(credentialID);
             access.userid = user.Id;
             _context.CredentialAccess.Add(access);
-
-
-
             _context.SaveChanges();
             return RedirectToPage("./Index");
+
         }
         private X509Certificate2 GetCertificateWithPrivateKeyForIdentity(Credential item)
         {
